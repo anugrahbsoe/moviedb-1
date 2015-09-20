@@ -3,30 +3,37 @@ package net.sleepbug.moviedb;
 /**
  * Created by panzertax on 13/09/15.
  */
-import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.LinearLayout;
-import android.content.Intent;
-import android.widget.TextView;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import com.squareup.picasso.Picasso;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import com.activeandroid.query.Select;
-import android.view.LayoutInflater;
-import net.sleepbug.moviedb.data.*;
-import net.sleepbug.moviedb.responses.*;
+import com.squareup.picasso.Picasso;
+
+import net.sleepbug.moviedb.data.Movie;
+import net.sleepbug.moviedb.data.Review;
+import net.sleepbug.moviedb.data.Video;
+import net.sleepbug.moviedb.responses.MovieResponse;
+import net.sleepbug.moviedb.responses.ReviewResponse;
+
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
-import retrofit.client.Response;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
-
-import java.util.List;
+import retrofit.client.Response;
 
 public class DetailFragment extends Fragment {
     private static final String YOUTUBE_URI = "http://www.youtube.com/watch?v=";
@@ -62,7 +69,7 @@ public class DetailFragment extends Fragment {
     TextView reviewsHeader;
 
     private Movie mMovie;
-    private MovieApi mTmdbApi;
+    private MovieApi movieApi;
 
 
     @Override
@@ -74,13 +81,13 @@ public class DetailFragment extends Fragment {
 
         Intent intent = getActivity().getIntent();
         getActivity().setTitle("MovieDetail");
-
+        setHasOptionsMenu(true);
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(MovieApi.MOVIEAPI_ENDPOINT)
                 .setConverter(Utility.getGsonConverter())
                 .build();
 
-        mTmdbApi = restAdapter.create(MovieApi.class);
+        movieApi = restAdapter.create(MovieApi.class);
 
         int movieId;
         Bundle arguments = getArguments();
@@ -102,6 +109,25 @@ public class DetailFragment extends Fragment {
         return view;
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        switch (itemId) {
+            case R.id.menu_item_share:
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                String shareBody = "You should watch the movie "+ mMovie.getOriginalTitle()+". It rocks!";
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Amazing movie");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(sharingIntent, "Share via"));
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     private void populateFields() {
         Picasso.with(getActivity())
                 .load(mMovie.getPosterPath())
@@ -143,7 +169,7 @@ public class DetailFragment extends Fragment {
     }
 
     private void fetchTrailers() {
-        mTmdbApi.getVideosForMovie(mMovie.getExternalId(), new Callback<MovieResponse>() {
+        movieApi.getVideosForMovie(mMovie.getExternalId(), new Callback<MovieResponse>() {
 
             @Override
             public void success(MovieResponse movieVideosResponse, Response response) {
@@ -187,7 +213,7 @@ public class DetailFragment extends Fragment {
     }
 
     private void loadReviews() {
-        mTmdbApi.getReviewsForMovie(mMovie.getExternalId(), new Callback<ReviewResponse>() {
+        movieApi.getReviewsForMovie(mMovie.getExternalId(), new Callback<ReviewResponse>() {
 
             @Override
             public void success(ReviewResponse reviewResponse, Response response) {

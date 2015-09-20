@@ -3,6 +3,7 @@
 
    <!-- menu items-->
     <string name="menu">Menu</string>
+    <string name="share">Share</string>
     <string name="most_popular">Most Popular</string>
     <string name="highest_rating">Highest Rated</string>
     <string name="favorites">My Favorites</string>
