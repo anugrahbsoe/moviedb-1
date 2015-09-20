@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Movie DB</string>
+
+   <!-- menu items-->
+    <string name="menu">Menu</string>
+    <string name="most_popular">Most Popular</string>
+    <string name="highest_rating">Highest Rated</string>
+    <string name="favorites">My Favorites</string>
+
+    <string name="order_by_popularity">Popularity</string>
+    <string name="order_by_rating">Rating</string>
+    <string name="order_by_favorites">Favorites</string>
+
+    <string name="trailer_button_title">Trailer #%s</string>
+    <string name="review_title_header">Reviews</string>
+    <string name="movie_video_header">Trailers</string>
+    <string name="movie_summary_header">Summary</string>
+</resources>
